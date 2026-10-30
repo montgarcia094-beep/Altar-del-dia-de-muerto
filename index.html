@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Altar Interactivo de Día de Muertos</title>
+  <style>
+    body {
+      background-color: #0f051d;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 15px;
+      user-select: none;
+    }
+
+    #guia-box {
+      background: linear-gradient(135deg, #ff007f, #ff7700);
+      color: #ffffff;
+      padding: 12px;
+      border-radius: 10px;
+      max-width: 650px;
+      margin: 0 auto 15px auto;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(255, 0, 127, 0.4);
+    }
+
+    .altar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin: 10px auto;
+      max-width: 700px;
+    }
+
+    .repisa {
+      background: linear-gradient(90deg, #4c0070, #7900a3);
+      border: 2px dashed #ff007f;
+      border-radius: 8px;
+      min-height: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      box-sizing: border-box;
+      transition: background 0.3s;
+    }
+
+    .repisa-titulo {
+      font-size: 13px;
+      font-weight: bold;
+      color: #ffcc00;
+      margin-bottom: 5px;
+    }
+
+    .repisa-contenido {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      width: 100%;
+      min-height: 30px;
+    }
+
+    .repisa.resaltada {
+      border: 3px solid #00f0ff;
+      background: linear-gradient(90deg, #7900a3, #aa00d4);
+      box-shadow: 0 0 15px #00f0ff;
+    }
+
+    .nivel-1 { width: 40%; }
+    .nivel-2 { width: 50%; }
+    .nivel-3 { width: 60%; }
+    .nivel-4 { width: 70%; }
+    .nivel-5 { width: 80%; }
+    .nivel-6 { width: 90%; }
+    .nivel-7 { width: 100%; }
+
+    .catalogo {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      background-color: #1a0933;
+      border: 2px solid #00f0ff;
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .elemento {
+      background: linear-gradient(135deg, #0088cc, #00b377);
+      border: 1px solid #00f0ff;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 20px;
+      cursor: grab;
+      font-size: 14px;
+      font-weight: bold;
+      touch-action: none;
+    }
+
+    .elemento.en-movimiento {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.85;
+      transform: scale(1.1);
+      box-shadow: 0 5px 15px rgba(0, 240, 255, 0.6);
+    }
+
+    #info-panel {
+      margin-top: 15px;
+      padding: 12px;
+      background-color: #260c47;
+      border-radius: 8px;
+      display: none;
+      border: 1px solid #ff007f;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Altar Paso a Paso</h1>
+
+  <div id="guia-box">
+    <span id="paso-texto">Cargando guía...</span>
+  </div>
+
+  <div class="altar">
+    <div class="repisa nivel-1" data-nivel="1">
+      <div class="repisa-titulo">Nivel 1: Santo o Virgen</div>
+      <div class="repisa-contenido"></div>
+    </div>
+    <div class="repisa nivel-2" data-nivel="2">
+      <div class="repisa-titulo">Nivel 2: Ánimas del Purgatorio</div>
+      <div class="repisa-contenido"></div>
+    </div>
+    <div class="repisa nivel-3" data-nivel="3">
+      <div class="repisa-titulo">Nivel 3: Sal para los Niños</div>
+      <div class="repisa-contenido"></div>
+    </div>
+    <div class="repisa nivel-4" data-nivel="4">
+      <div class="repisa-titulo">Nivel 4: Pan de Muerto</div>
+      <div class="repisa-contenido"></div>
+    </div>
+    <div class="repisa nivel-5" data-nivel="5">
+      <div class="repisa-titulo">Nivel 5: Comida y Bebida</div>
+      <div class="repisa-contenido"></div>
+    </div>
+    <div class="repisa nivel-6" data-nivel="6">
+      <div class="repisa-titulo">Nivel 6: Fotos de los Difuntos</div>
+      <div class="repisa-contenido"></div>
+    </div>
+    <div class="repisa nivel-7" data-nivel="7">
+      <div class="repisa-titulo">Nivel 7: Cruz de Ceniza o Flores</div>
+      <div class="repisa-contenido"></div>
+    </div>
+  </div>
+
+  <div id="info-panel">
+    <h3 id="info-titulo" style="margin: 0 0 5px 0; color: #ffcc00;"></h3>
+    <p id="info-texto" style="margin: 0;"></p>
+  </div>
+
+  <h3>Elementos Disponibles</h3>
+  <div class="catalogo">
+    <div class="elemento" id="santo" data-nivel-correcto="1" data-info="Imagen del santo a quien se encomienda la ofrenda.">🖼️ Santo</div>
+    <div class="elemento" id="veladora" data-nivel-correcto="2" data-info="Ilumina el camino de las almas.">🕯️ Veladora</div>
+    <div class="elemento" id="sal" data-nivel-correcto="3" data-info="Purifica el alma para evitar su corrupción.">🧂 Sal</div>
+    <div class="elemento" id="pan" data-nivel-correcto="4" data-info="Representa la generosidad y la fraternidad.">🍞 Pan de Muerto</div>
+    <div class="elemento" id="comida" data-nivel-correcto="5" data-info="Los platillos favoritos del difunto.">🍲 Comida</div>
+    <div class="elemento" id="foto" data-nivel-correcto="6" data-info="Retrato en honor a los seres queridos.">📸 Foto del Difunto</div>
+    <div class="elemento" id="cruz" data-nivel-correcto="7" data-info="Cruz trazada con sal, flores o ceniza.">✝️ Cruz de Ceniza</div>
+    <div class="elemento" id="copal" data-nivel-correcto="2" data-info="Limpia y purifica el ambiente de malos espíritus.">💨 Copal</div>
+    <div class="elemento" id="agua" data-nivel-correcto="3" data-info="Calma la sed de las almas tras el viaje.">🥛 Agua</div>
+    <div class="elemento" id="cempasuchil" data-nivel-correcto="7" data-info="Guía con su aroma y color vibrante.">🌼 Cempasúchil</div>
+  </div>
+
+  <script>
+    const pasosGuia = [
+      { elementoId: 'santo', nivel: 1, mensaje: 'Paso 1: Arrastra el 🖼️ Santo al Nivel 1.' },
+      { elementoId: 'veladora', nivel: 2, mensaje: 'Paso 2: Coloca la 🕯️ Veladora en el Nivel 2.' },
+      { elementoId: 'sal', nivel: 3, mensaje: 'Paso 3: Lleva la 🧂 Sal al Nivel 3.' },
+      { elementoId: 'pan', nivel: 4, mensaje: 'Paso 4: Coloca el 🍞 Pan de Muerto en el Nivel 4.' },
+      { elementoId: 'comida', nivel: 5, mensaje: 'Paso 5: Pon la 🍲 Comida en el Nivel 5.' },
+      { elementoId: 'foto', nivel: 6, mensaje: 'Paso 6: Pon la 📸 Foto en el Nivel 6.' },
+      { elementoId: 'cruz', nivel: 7, mensaje: 'Paso 7: Ubica la ✝️ Cruz en el Nivel 7.' }
+    ];
+
+    let pasoActual = 0;
+    let elemArrastrando = null;
+
+    const pasoTexto = document.getElementById('paso-texto');
+    const elementos = document.querySelectorAll('.elemento');
+    const repisas = document.querySelectorAll('.repisa');
+    const infoPanel = document.getElementById('info-panel');
+
+    function actualizarGuia() {
+      if (pasoActual < pasosGuia.length) {
+        pasoTexto.innerText = pasosGuia[pasoActual].mensaje;
+        resaltarNivel(pasosGuia[pasoActual].nivel);
+      } else {
+        pasoTexto.innerText = '🎉 ¡Altar completado! Acomoda el resto de elementos a tu gusto.';
+        resaltarNivel(null);
+      }
+    }
+
+    function resaltarNivel(nivel) {
+      repisas.forEach(r => {
+        if (r.getAttribute('data-nivel') == nivel) {
+          r.classList.add('resaltada');
+        } else {
+          r.classList.remove('resaltada');
+        }
+      });
+    }
+
+    // Arrancador de movimiento para Mouse y Touch
+    elementos.forEach(elem => {
+      elem.addEventListener('mousedown', iniciarArrastre);
+      elem.addEventListener('touchstart', iniciarArrastre, { passive: false });
+    });
+
+    function iniciarArrastre(e) {
+      e.preventDefault();
+      elemArrastrando = this;
+      elemArrastrando.classList.add('en-movimiento');
+
+      const x = e.clientX || (e.touches && e.touches[0].clientX);
+      const y = e.clientY || (e.touches && e.touches[0].clientY);
+
+      moverElemento(x, y);
+
+      window.addEventListener('mousemove', moverConPointer);
+      window.addEventListener('touchmove', moverConPointer, { passive: false });
+      window.addEventListener('mouseup', soltarElemento);
+      window.addEventListener('touchend', soltarElemento);
+    }
+
+    function moverConPointer(e) {
+      if (!elemArrastrando) return;
+      e.preventDefault();
+      const x = e.clientX || (e.touches && e.touches[0].clientX);
+      const y = e.clientY || (e.touches && e.touches[0].clientY);
+      moverElemento(x, y);
+    }
+
+    function moverElemento(x, y) {
+      if (elemArrastrando) {
+        elemArrastrando.style.left = (x - elemArrastrando.offsetWidth / 2) + 'px';
+        elemArrastrando.style.top = (y - elemArrastrando.offsetHeight / 2) + 'px';
+      }
+    }
+
+    function soltarElemento(e) {
+      if (!elemArrastrando) return;
+
+      const x = e.clientX || (e.changedTouches && e.changedTouches[0].clientX);
+      const y = e.clientY || (e.changedTouches && e.changedTouches[0].clientY);
+
+      elemArrastrando.classList.remove('en-movimiento');
+      elemArrastrando.style.left = '';
+      elemArrastrando.style.top = '';
+
+      const debajo = document.elementFromPoint(x, y);
+      const repisaDestino = debajo ? debajo.closest('.repisa') : null;
+
+      if (repisaDestino) {
+        const contenedor = repisaDestino.querySelector('.repisa-contenido');
+        contenedor.appendChild(elemArrastrando);
+
+        document.getElementById('info-titulo').innerText = elemArrastrando.innerText;
+        document.getElementById('info-texto').innerText = elemArrastrando.getAttribute('data-info');
+        infoPanel.style.display = 'block';
+
+        if (pasoActual < pasosGuia.length) {
+          const pasoTarget = pasosGuia[pasoActual];
+          if (elemArrastrando.id === pasoTarget.elementoId && repisaDestino.getAttribute('data-nivel') == pasoTarget.nivel) {
+            pasoActual++;
+            actualizarGuia();
+          }
+        }
+      }
+
+      elemArrastrando = null;
+      window.removeEventListener('mousemove', moverConPointer);
+      window.removeEventListener('touchmove', moverConPointer);
+      window.removeEventListener('mouseup', soltarElemento);
+      window.removeEventListener('touchend', soltarElemento);
+    }
+
+    actualizarGuia();
+  </script>
+
+</body>
+</html>
